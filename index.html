@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sys.moth</title>
+    <style>
+        /* PURE BLACK AND WHITE */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 15px;
+            margin: 0;
+            padding: 15px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* FADING TEXT */
+        .fading-text {
+            color: #111111; 
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            user-select: text;
+            font-size: 12px;
+            z-index: 99;
+        }
+
+        /* HIDDEN BUTTON */
+        .ghost-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            opacity: 0; 
+            cursor: default;
+            z-index: 99;
+        }
+
+        #terminal {
+            flex-grow: 1;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .prompt {
+            color: #ffffff;
+            margin-right: 10px;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px; 
+            outline: none;
+            flex-grow: 1;
+            padding: 0;
+            margin: 0;
+            caret-color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .glitch-text {
+            color: #ffffff;
+            animation: glitch 0.2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { opacity: 1; transform: translate(0); }
+            20% { opacity: 0.8; transform: translate(-2px, 2px); }
+            40% { opacity: 0.9; transform: translate(-2px, -2px); }
+            60% { opacity: 0.8; transform: translate(2px, 2px); }
+            80% { opacity: 0.9; transform: translate(2px, -2px); }
+            100% { opacity: 1; transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fading-text">Missing bytes: n1, 7</div>
+
+    <!-- 
+    Missing bytes: i
+    -->
+
+    <div id="terminal">
+<!-- 
+  ███╗   ███╗ ██████╗ ████████╗██╗  ██╗
+  ████╗ ████║██╔═══██╗╚══██╔══╝██║  ██║
+  ██╔████╔██║██║   ██║   ██║   ███████║
+  ██║╚██╔╝██║██║   ██║   ██║   ██╔══██║
+  ██║ ╚═╝ ██║╚██████╔╝   ██║   ██║  ██║
+  ╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝
+           |    |    |    |
+          |||  |||  |||  |||
+         ||||| ||||| ||||| |||||
+         ||||| ||||| ||||| |||||
+          ||   ||   ||   ||
+               |    |
+-->
+    </div>
+
+    <div class="input-line">
+        <span class="prompt">root@moth:~#</span>
+        <input type="text" id="cmd" autocomplete="off" autofocus spellcheck="false">
+    </div>
+
+    <button class="ghost-btn" onclick="alert('Missing byte: b')"></button>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('cmd');
+
+        document.body.addEventListener('click', function() {
+            input.focus();
+        });
+
+        // FINAL PASSWORD: the_on1_WH7_l8es_i3_a_b5d_mo4th
+        // ROT13 Encoded: gur_ba1_JU7_y8rf_v3_n_o5q_zb4gu
+        const ENCODED_PASS = "gur_ba1_JU7_y8rf_v3_n_o5q_zb4gu"; 
+
+        function rot13(str) {
+            return str.replace(/[a-zA-Z]/g, function(c) {
+                return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+            });
+        }
+
+        function print(text, className = "") {
+            let div = document.createElement('div');
+            div.className = className;
+            div.innerText = text;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // GLITCH INPUT EFFECT
+        input.addEventListener('input', function(e) {
+            // Disable glitch if they are typing the correct password
+            if (input.value === rot13(ENCODED_PASS) || input.value === "the_on1_WH7_l8es_i3_a_b5d_mo4th") {
+                return;
+            }
+            
+            let actualValue = input.value;
+            let scrambled = "";
+            for (let i = 0; i < actualValue.length; i++) {
+                if (Math.random() > 0.7) {
+                    scrambled += Math.random() > 0.5 ? "█" : "▓";
+                } else {
+                    scrambled += actualValue[i];
+                }
+            }
+            
+            input.value = scrambled;
+            setTimeout(() => { input.value = actualValue; }, 40);
+        });
+
+        setTimeout(() => {
+            print("SYSTEM INITIALIZED.");
+            print("Type 'help' for commands.");
+        }, 500);
+
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                let cmd = input.value.trim();
+                input.value = "";
+                
+                print(`root@moth:~# ${cmd}`);
+
+                let c = cmd.toLowerCase();
+
+                if (c === "help") {
+                    print("ls         - list files");
+                    print("cat        - read file");
+                    print("decrypt    - run protocol");
+                    print("clear      - wipe terminal");
+                } 
+                else if (c === "ls") {
+                    print("sys.dat");
+                    print("logs.txt");
+                } 
+                else if (c === "cat logs.txt") {
+                    print("ERR: FILE CORRUPTED.");
+                } 
+                else if (c === "cat sys.dat") {
+                    print("ERR: FILE ENCRYPTED.");
+                } 
+                else if (c === "decrypt") {
+                    print("DECRYPTING HEX...");
+                    setTimeout(() => {
+                        print("74 68 65 5f 6f ██ ██ 5f 57 48 ██ 5f 6c 38 65 73 5f ██ 33 5f 61 5f ██ 35 64 5f 6d 6f 34 74 68");
+                        print("[!] Missing bytes detected. Search the source.");
+                    }, 600);
+                } 
+                else if (c === "clear") {
+                    terminal.innerHTML = "";
+                } 
+                else if (cmd === rot13(ENCODED_PASS) || cmd === "the_on1_WH7_l8es_i3_a_b5d_mo4th") {
+                    // ==========================================
+                    // THE WIN SEQUENCE (THE REWARD)
+                    // ==========================================
+                    terminal.innerHTML = "";
+                    input.disabled = true;
+                    input.placeholder = "SYSTEM OVERRIDE...";
+                    
+                    print("[!] MASTER KEY ACCEPTED.");
+                    
+                    setTimeout(() => {
+                        print("[*] BYPASSING FIREWALL...");
+                    }, 800);
+
+                    setTimeout(() => {
+                        print("[*] DECRYPTING ROOT FILESYSTEM...");
+                    }, 1600);
+
+                    setTimeout(() => {
+                        terminal.innerHTML = "";
+                        // THE ASCII ART REWARD
+                        print(`
+      .-""""-.
+     /        \\
+    /_        _\\
+   // \      / \\\\
+   |\__\    /__/|
+    \___\  /___/
+     _  \  /  _
+    / \  \/  / \\
+    \  \/\/\/  /
+     \        /
+      \______/
+      
+  T H E   M O T H   H A S   E M E R G E D
+                        `);
+                        print("=========================================");
+                        print("CONGRATULATIONS. YOU BEAT THE PUZZLE.");
+                        print("=========================================");
+                        print("> Your reward is proof of your intellect.");
+                        print("> Here is your flag: flag{m0th_1s_4l1v3}");
+                        print("> Send this to the creator to claim victory.");
+                        print("");
+                        print("> SYSTEM UNLOCKED.");
+                    }, 2500);
+                } 
+                else {
+                    print("ERR: INVALID KEY.", "glitch-text");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
