@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sys.moth</title>
     <style>
-        /* PURE BLACK AND WHITE */
+        /* PURE BLACK AND WHITE TERMINAL */
         body {
             background-color: #000000;
             color: #ffffff;
@@ -20,7 +20,7 @@
             overflow: hidden;
         }
 
-        /* FADING TEXT */
+        /* FADING CLUE TEXT */
         .fading-text {
             color: #111111; 
             position: absolute;
@@ -31,7 +31,7 @@
             z-index: 99;
         }
 
-        /* HIDDEN BUTTON */
+        /* HIDDEN BUTTON FOR CLUE */
         .ghost-btn {
             position: absolute;
             top: 0;
@@ -93,8 +93,10 @@
 </head>
 <body>
 
+    <!-- CLUE 1: FADING TEXT -->
     <div class="fading-text">Missing bytes: n1, 7</div>
 
+    <!-- CLUE 2: SOURCE CODE -->
     <!-- 
     Missing bytes: i
     -->
@@ -121,25 +123,24 @@
         <input type="text" id="cmd" autocomplete="off" autofocus spellcheck="false">
     </div>
 
+    <!-- CLUE 3: HIDDEN BUTTON -->
     <button class="ghost-btn" onclick="alert('Missing byte: b')"></button>
 
     <script>
         const terminal = document.getElementById('terminal');
         const input = document.getElementById('cmd');
 
+        // Force keyboard to open on mobile when screen is tapped
         document.body.addEventListener('click', function() {
             input.focus();
         });
 
-        // FINAL PASSWORD: the_on1_WH7_l8es_i3_a_b5d_mo4th
-        // ROT13 Encoded: gur_ba1_JU7_y8rf_v3_n_o5q_zb4gu
-        const ENCODED_PASS = "gur_ba1_JU7_y8rf_v3_n_o5q_zb4gu"; 
-
-        function rot13(str) {
-            return str.replace(/[a-zA-Z]/g, function(c) {
-                return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
-            });
-        }
+        // ==========================================
+        // SECURE VERIFICATION (NO PLAIN TEXT PASSWORD)
+        // Length = 31, Checksum = 2846
+        // ==========================================
+        const CORRECT_LENGTH = 31;
+        const CORRECT_CHECKSUM = 2846;
 
         function print(text, className = "") {
             let div = document.createElement('div');
@@ -149,11 +150,11 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // GLITCH INPUT EFFECT
+        // THE GLITCH INPUT EFFECT
         input.addEventListener('input', function(e) {
-            // Disable glitch if they are typing the correct password
-            if (input.value === rot13(ENCODED_PASS) || input.value === "the_on1_WH7_l8es_i3_a_b5d_mo4th") {
-                return;
+            // Stop glitching if they hit the exact character count
+            if (input.value.length === CORRECT_LENGTH) {
+                return; 
             }
             
             let actualValue = input.value;
@@ -170,6 +171,7 @@
             setTimeout(() => { input.value = actualValue; }, 40);
         });
 
+        // STARTUP TEXT
         setTimeout(() => {
             print("SYSTEM INITIALIZED.");
             print("Type 'help' for commands.");
@@ -210,54 +212,55 @@
                 else if (c === "clear") {
                     terminal.innerHTML = "";
                 } 
-                else if (cmd === rot13(ENCODED_PASS) || cmd === "the_on1_WH7_l8es_i3_a_b5d_mo4th") {
-                    // ==========================================
-                    // THE WIN SEQUENCE (THE REWARD)
-                    // ==========================================
-                    terminal.innerHTML = "";
-                    input.disabled = true;
-                    input.placeholder = "SYSTEM OVERRIDE...";
-                    
-                    print("[!] MASTER KEY ACCEPTED.");
-                    
-                    setTimeout(() => {
-                        print("[*] BYPASSING FIREWALL...");
-                    }, 800);
-
-                    setTimeout(() => {
-                        print("[*] DECRYPTING ROOT FILESYSTEM...");
-                    }, 1600);
-
-                    setTimeout(() => {
-                        terminal.innerHTML = "";
-                        // THE ASCII ART REWARD
-                        print(`
-      .-""""-.
-     /        \\
-    /_        _\\
-   // \      / \\\\
-   |\__\    /__/|
-    \___\  /___/
-     _  \  /  _
-    / \  \/  / \\
-    \  \/\/\/  /
-     \        /
-      \______/
-      
-  T H E   M O T H   H A S   E M E R G E D
-                        `);
-                        print("=========================================");
-                        print("CONGRATULATIONS. YOU BEAT THE PUZZLE.");
-                        print("=========================================");
-                        print("> Your reward is proof of your intellect.");
-                        print("> Here is your flag: flag{m0th_1s_4l1v3}");
-                        print("> Send this to the creator to claim victory.");
-                        print("");
-                        print("> SYSTEM UNLOCKED.");
-                    }, 2500);
-                } 
                 else {
-                    print("ERR: INVALID KEY.", "glitch-text");
+                    // THE SECRET MATH CHECK (Checksum)
+                    let checksum = 0;
+                    for (let i = 0; i < cmd.length; i++) {
+                        checksum += cmd.charCodeAt(i);
+                    }
+
+                    if (cmd.length === CORRECT_LENGTH && checksum === CORRECT_CHECKSUM) {
+                        // ==========================================
+                        // THE WIN SEQUENCE (THE REWARD)
+                        // ==========================================
+                        terminal.innerHTML = "";
+                        input.disabled = true;
+                        input.placeholder = "SYSTEM OVERRIDE...";
+                        
+                        print("[!] MASTER KEY ACCEPTED.");
+                        
+                        setTimeout(() => { print("[*] BYPASSING FIREWALL..."); }, 800);
+                        setTimeout(() => { print("[*] DECRYPTING ROOT FILESYSTEM..."); }, 1600);
+
+                        setTimeout(() => {
+                            terminal.innerHTML = "";
+                            print(`
+          .-""""-.
+         /        \\
+        /_        _\\
+       // \      / \\\\
+       |\__\    /__/|
+        \___\  /___/
+         _  \  /  _
+        / \  \/  / \\
+        \  \/\/\/  /
+         \        /
+          \______/
+          
+      T H E   M O T H   H A S   E M E R G E D
+                            `);
+                            print("=========================================");
+                            print("CONGRATULATIONS. YOU BEAT THE PUZZLE.");
+                            print("=========================================");
+                            print("> Your reward is proof of your intellect.");
+                            print("> Here is your flag: flag{m0th_1s_4l1v3}");
+                            print("> Send this to the creator to claim victory.");
+                            print("");
+                            print("> SYSTEM UNLOCKED.");
+                        }, 2500);
+                    } else {
+                        print("ERR: INVALID KEY.", "glitch-text");
+                    }
                 }
             }
         });
